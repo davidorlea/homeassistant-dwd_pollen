@@ -3,6 +3,7 @@
   "name": "DWD pollen sensor",
   "documentation": "",
   "dependencies": [],
+  "after_dependencies": ["rest"],
   "codeowners": [],
   "requirements": []
 }
