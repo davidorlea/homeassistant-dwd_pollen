@@ -16,7 +16,17 @@ _LOGGER = logging.getLogger(__name__)
 
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=60)
 
-POLLEN_TYPES = {"ambrosia", "grass", "tree"}
+POLLEN_TYPES = {
+    "alder",
+    "ambrosia",
+    "ash",
+    "birch",
+    "grass",
+    "hazel",
+    "mugwort",
+    "rye",
+    "tree",
+}
 
 CONF_PARTREGION_ID = "partregion_id"
 CONF_POLLEN_TYPES = "pollen_types"
@@ -28,7 +38,16 @@ ATTR_PARTREGION_NAME = "partregion_name"
 ATTR_REGION_NAME = "region_name"
 
 DEFAULT_NAME = "DWD Pollen"
-DEFAULT_POLLEN_TYPES = ["ambrosia", "grass", "tree"]
+DEFAULT_POLLEN_TYPES = [
+    "alder",
+    "ambrosia",
+    "ash",
+    "birch",
+    "grass",
+    "hazel",
+    "mugwort",
+    "rye",
+]
 
 ICON = "mdi:flower"
 ATTRIBUTION = "Data provided by Deutscher Wetterdienst"
@@ -189,8 +208,14 @@ class DwdPollenSensor(Entity):
     def __calculate_level(pollen_list, pollen_category, day):
         """Calculate exposure level of a pollen category for a certain day."""
         pollen_mapping = {
+            "alder": ["Erle"],
             "ambrosia": ["Ambrosia"],
+            "ash": ["Esche"],
+            "birch": ["Birke"],
             "grass": ["Graeser"],
+            "hazel": ["Hasel"],
+            "mugwort": ["Beifuss"],
+            "rye": ["Roggen"],
             "tree": ["Beifuss", "Birke", "Erle", "Esche", "Hasel", "Roggen"],
         }
         level_mapping = {
