@@ -168,7 +168,7 @@ class DwdPollenSensor(Entity):
 
         if exposure:
             if exposure["level"] >= 0:
-                self._state = round(exposure["level"] / 6 * 100, 0)
+                self._state = round(exposure["level"] / 6 * 100)
             self._attributes[ATTR_DESCRIPTION] = self.__get_description(
                 exposure["level"]
             )
