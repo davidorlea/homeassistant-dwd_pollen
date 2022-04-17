@@ -1,7 +1,7 @@
 {
   "domain": "dwd_pollen",
   "name": "DWD Pollen Sensor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "documentation": "https://github.com/davidorlea/homeassistant-dwd_pollen",
   "issue_tracker": "https://github.com/davidorlea/homeassistant-dwd_pollen/issues",
   "dependencies": [],
