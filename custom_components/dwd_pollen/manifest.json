@@ -1,10 +1,12 @@
 {
   "domain": "dwd_pollen",
   "name": "DWD Pollen Sensor",
-  "version": "0.3.0",
-  "documentation": "https://github.com/davidorlea/homeassistant-dwd_pollen",
-  "issue_tracker": "https://github.com/davidorlea/homeassistant-dwd_pollen/issues",
-  "dependencies": [],
   "codeowners": ["@davidorlea"],
-  "requirements": []
+  "dependencies": [],
+  "documentation": "https://github.com/davidorlea/homeassistant-dwd_pollen",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/davidorlea/homeassistant-dwd_pollen/issues",
+  "requirements": [],
+  "version": "0.3.0"
 }
