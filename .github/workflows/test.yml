@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: 30 3 * * *
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          submodules: recursive
+      - name: Run pytest
+        uses: davidorlea/actions/homeassistant/pytest@master
+        with:
+          python-version: '3.14'
+          python-requirements: 'requests_mock homeassistant'
