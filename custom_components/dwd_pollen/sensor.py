@@ -1,6 +1,7 @@
 """Representation of DWD Pollen Sensor."""
 
 from datetime import datetime, timedelta
+import json
 import logging
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -87,11 +88,17 @@ class DwdPollenApi:
             response = requests.get(resource, verify=True, timeout=10)
             response.raise_for_status()
             return response.json()
+        except json.decoder.JSONDecodeError as ex:
+            _LOGGER.error("Error parsing data: %s failed with %s", resource, ex)
+            return None
+        except requests.exceptions.HTTPError as ex:
+            if ex.response.status_code >= 500:
+                _LOGGER.warning("Error fetching data: %s failed with %s", resource, ex)
+            else:
+                _LOGGER.error("Error fetching data: %s failed with %s", resource, ex)
+            return None
         except requests.exceptions.RequestException as ex:
             _LOGGER.error("Error fetching data: %s failed with %s", resource, ex)
-            return None
-        except ValueError as ex:
-            _LOGGER.error("Error parsing data: %s failed with %s", resource, ex)
             return None
 
 
@@ -177,12 +184,12 @@ class DwdPollenSensor(Entity):
                 exposure["next_update"] = next_update
                 exposure["region_name"] = partregion["region_name"]
                 exposure["partregion_name"] = partregion["partregion_name"]
-            except KeyError as ex:
+            except (KeyError, TypeError) as ex:
                 _LOGGER.error(
-                    "Erroneous result found when expecting exposure data: %s", ex
+                    "Erroneous result found: %s failed with %s",
+                    result,
+                    ex,
                 )
-        else:
-            _LOGGER.error("Empty result found when expecting exposure data")
 
         if exposure:
             if exposure["level"] >= 0:
