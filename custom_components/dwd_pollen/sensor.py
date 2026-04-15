@@ -3,14 +3,13 @@
 from datetime import datetime, timedelta
 import logging
 
-import requests
-import voluptuous as vol
-
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, PERCENTAGE
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
+import requests
+import voluptuous as vol
 
 _LOGGER = logging.getLogger(__name__)
 
