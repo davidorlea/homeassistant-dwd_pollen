@@ -1,8 +1,10 @@
 """Tests for DWD Pollen Sensor."""
 
+from collections.abc import Callable, Generator
 import datetime
 from datetime import datetime as real_datetime
 import json
+from typing import Any
 from unittest.mock import patch
 
 from homeassistant.const import PERCENTAGE
@@ -14,13 +16,13 @@ from custom_components.dwd_pollen.sensor import DwdPollenApi, DwdPollenSensor
 
 
 @pytest.fixture()
-def mock_today():
+def mock_today() -> Generator[Callable[[datetime.datetime], None]]:
     """Fixture to mock today from datetime."""
     with patch(
         "custom_components.dwd_pollen.sensor.datetime", wraps=real_datetime
     ) as m:
 
-        def _mock(date):
+        def _mock(date: datetime.datetime) -> None:
             m.today.return_value = date
 
         yield _mock
@@ -36,7 +38,9 @@ def mock_today():
         {"content": {}},
     ],
 )
-def test_sensor_with_empty_response(api_response, requests_mock: requests_mock.Mocker):
+def test_sensor_with_empty_response(
+    api_response: Any, requests_mock: requests_mock.Mocker
+) -> None:
     """Test that sensor with empty response returns correct properties."""
     requests_mock.get(
         "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json",
@@ -58,7 +62,7 @@ def test_sensor_with_empty_response(api_response, requests_mock: requests_mock.M
     assert sensor.extra_state_attributes.get("attribution") is None
 
 
-def test_sensor_with_malformed_response(requests_mock: requests_mock.Mocker):
+def test_sensor_with_malformed_response(requests_mock: requests_mock.Mocker) -> None:
     """Test that sensor with malformed response returns correct properties."""
     requests_mock.get(
         "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json",
@@ -80,7 +84,7 @@ def test_sensor_with_malformed_response(requests_mock: requests_mock.Mocker):
     assert sensor.extra_state_attributes.get("attribution") is None
 
 
-def test_sensor_with_error_response(requests_mock: requests_mock.Mocker):
+def test_sensor_with_error_response(requests_mock: requests_mock.Mocker) -> None:
     """Test that sensor with error response returns correct properties."""
     requests_mock.get(
         "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json",
@@ -103,7 +107,7 @@ def test_sensor_with_error_response(requests_mock: requests_mock.Mocker):
     assert sensor.extra_state_attributes.get("attribution") is None
 
 
-def test_sensor_with_no_response(requests_mock: requests_mock.Mocker):
+def test_sensor_with_no_response(requests_mock: requests_mock.Mocker) -> None:
     """Test that sensor with no response returns correct properties."""
     requests_mock.get(
         "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json",
@@ -126,12 +130,12 @@ def test_sensor_with_no_response(requests_mock: requests_mock.Mocker):
 
 
 def test_sensor_with_malformed_pollen_exposure(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with malformed pollen exposure returns correct properties."""
     exposure = create_exposure().with_grass("999", "0", "0").build()
     region = (
@@ -177,12 +181,12 @@ def test_sensor_with_malformed_pollen_exposure(
 
 
 def test_sensor_with_unknown_partregion(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with unknown partregion returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -219,12 +223,12 @@ def test_sensor_with_unknown_partregion(
 
 
 def test_sensor_with_unknown_pollen_type(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with unknown pollen type returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -261,12 +265,12 @@ def test_sensor_with_unknown_pollen_type(
 
 
 def test_sensor_with_today(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with today returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -311,12 +315,12 @@ def test_sensor_with_today(
 
 
 def test_sensor_with_yesterday(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with yesterday returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -363,12 +367,12 @@ def test_sensor_with_yesterday(
 
 
 def test_sensor_with_ereyesterday(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with ereyesterday returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -413,12 +417,12 @@ def test_sensor_with_ereyesterday(
 
 
 def test_sensor_with_before_last_update(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with before last update returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -463,12 +467,12 @@ def test_sensor_with_before_last_update(
 
 
 def test_sensor_with_before_next_update(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with before next update returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (
@@ -515,12 +519,12 @@ def test_sensor_with_before_next_update(
 
 
 def test_sensor_with_too_old(
-    create_exposure,
-    create_region,
-    create_api_response,
-    mock_today,
+    create_exposure: Any,
+    create_region: Any,
+    create_api_response: Any,
+    mock_today: Callable[[datetime.datetime], None],
     requests_mock: requests_mock.Mocker,
-):
+) -> None:
     """Test that sensor with too old returns correct properties."""
     exposure = create_exposure().with_grass("1", "2", "3").build()
     region = (

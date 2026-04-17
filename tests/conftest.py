@@ -1,7 +1,8 @@
 """Test fixtures for DWD Pollen Sensor."""
 
+from collections.abc import Callable
 import json
-from typing import Self
+from typing import Any, Self
 
 from pytest import fixture
 
@@ -9,7 +10,7 @@ from pytest import fixture
 class DwdPollenExposureFixture:
     """Representation of a DWD Pollen exposure fixture."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the DWD Pollen exposure fixture."""
         self._alder = ["0", "0", "0"]
         self._ambrosia = ["0", "0", "0"]
@@ -25,7 +26,7 @@ class DwdPollenExposureFixture:
         self._grass = [today, tomorrow, overmorrow]
         return self
 
-    def build(self) -> dict:
+    def build(self) -> dict[str, Any]:
         """Return the exposure."""
         return {
             "Ambrosia": {
@@ -74,13 +75,13 @@ class DwdPollenExposureFixture:
 class DwdPollenRegionFixture:
     """Representation of a DWD Pollen region fixture."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the DWD Pollen region fixture."""
         self._region_id = 123
         self._region_name = "Some Region Name"
         self._partregion_id = 456
         self._partregion_name = "Some Part Region Name"
-        self._exposure = {}
+        self._exposure: dict[str, Any] = {}
 
     def with_region_id(self, region_id: int) -> Self:
         """Set an individual region ID."""
@@ -102,12 +103,12 @@ class DwdPollenRegionFixture:
         self._partregion_name = partregion_name
         return self
 
-    def with_exposure(self, exposure: dict) -> Self:
+    def with_exposure(self, exposure: dict[str, Any]) -> Self:
         """Set an individual exposure."""
         self._exposure = exposure
         return self
 
-    def build(self) -> dict:
+    def build(self) -> dict[str, Any]:
         """Return the region."""
         return {
             "region_id": self._region_id,
@@ -121,11 +122,11 @@ class DwdPollenRegionFixture:
 class DwdPollenApiFixture:
     """Representation of a DWD Pollen API fixture."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the DWD Pollen API fixture."""
         self._last_update = "1970-01-01 00:01 Uhr"
         self._next_update = "1970-01-02 00:02 Uhr"
-        self._regions = []
+        self._regions: list[dict[str, Any]] = []
 
     def with_last_update(self, last_update: str) -> Self:
         """Set an individual last update."""
@@ -137,12 +138,12 @@ class DwdPollenApiFixture:
         self._next_update = next_update
         return self
 
-    def with_regions(self, regions: list[dict]) -> Self:
+    def with_regions(self, regions: list[dict[str, Any]]) -> Self:
         """Set an individual list of regions."""
         self._regions = regions
         return self
 
-    def build(self) -> dict:
+    def build(self) -> dict[str, Any]:
         """Return the API."""
         return {
             "last_update": self._last_update,
@@ -152,7 +153,7 @@ class DwdPollenApiFixture:
 
 
 @fixture()
-def create_exposure():
+def create_exposure() -> Callable[[], DwdPollenExposureFixture]:
     """Fixture to create a DWD Pollen exposure."""
 
     def _create_exposure() -> DwdPollenExposureFixture:
@@ -162,7 +163,7 @@ def create_exposure():
 
 
 @fixture()
-def create_region():
+def create_region() -> Callable[[], DwdPollenRegionFixture]:
     """Fixture to create a DWD Pollen region."""
 
     def _create_region() -> DwdPollenRegionFixture:
@@ -172,11 +173,11 @@ def create_region():
 
 
 @fixture()
-def create_api_response():
+def create_api_response() -> Callable[[str, str, list[dict[str, Any]]], str]:
     """Fixture to create a DWD Pollen API response."""
 
     def _create_api_response(
-        last_update: str, next_update: str, regions: list[dict]
+        last_update: str, next_update: str, regions: list[dict[str, Any]]
     ) -> str:
         response = (
             DwdPollenApiFixture()
