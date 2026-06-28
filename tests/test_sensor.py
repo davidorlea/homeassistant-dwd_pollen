@@ -1,6 +1,6 @@
 """Tests for DWD Pollen Sensor."""
 
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Generator, Mapping
 import datetime
 from datetime import datetime as real_datetime
 import json
@@ -13,6 +13,12 @@ import requests
 import requests_mock
 
 from custom_components.dwd_pollen.sensor import DwdPollenApi, DwdPollenSensor
+
+
+def extra_state_attributes(sensor: DwdPollenSensor) -> Mapping[str, Any]:
+    """Return sensor attributes with a non-optional type for assertions."""
+    assert sensor.extra_state_attributes is not None
+    return sensor.extra_state_attributes
 
 
 @pytest.fixture()
@@ -54,12 +60,12 @@ def test_sensor_with_empty_response(
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_malformed_response(requests_mock: requests_mock.Mocker) -> None:
@@ -76,12 +82,12 @@ def test_sensor_with_malformed_response(requests_mock: requests_mock.Mocker) -> 
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_error_response(requests_mock: requests_mock.Mocker) -> None:
@@ -99,12 +105,12 @@ def test_sensor_with_error_response(requests_mock: requests_mock.Mocker) -> None
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_no_response(requests_mock: requests_mock.Mocker) -> None:
@@ -121,12 +127,12 @@ def test_sensor_with_no_response(requests_mock: requests_mock.Mocker) -> None:
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_malformed_pollen_exposure(
@@ -163,19 +169,16 @@ def test_sensor_with_malformed_pollen_exposure(
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert sensor.extra_state_attributes["description"] == "unknown level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "unknown level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_unknown_partregion(
@@ -212,12 +215,12 @@ def test_sensor_with_unknown_partregion(
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_unknown_pollen_type(
@@ -254,12 +257,12 @@ def test_sensor_with_unknown_pollen_type(
     assert sensor.icon == "mdi:flower"
     assert sensor.device_class is None
     assert sensor.state is None
-    assert "description" not in sensor.extra_state_attributes
-    assert "last_update" not in sensor.extra_state_attributes
-    assert "next_update" not in sensor.extra_state_attributes
-    assert "region_name" not in sensor.extra_state_attributes
-    assert "partregion_name" not in sensor.extra_state_attributes
-    assert "attribution" not in sensor.extra_state_attributes
+    assert "description" not in extra_state_attributes(sensor)
+    assert "last_update" not in extra_state_attributes(sensor)
+    assert "next_update" not in extra_state_attributes(sensor)
+    assert "region_name" not in extra_state_attributes(sensor)
+    assert "partregion_name" not in extra_state_attributes(sensor)
+    assert "attribution" not in extra_state_attributes(sensor)
 
 
 def test_sensor_with_today(
@@ -297,19 +300,16 @@ def test_sensor_with_today(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state == 33
-    assert sensor.extra_state_attributes["description"] == "low level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "low level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_yesterday(
@@ -347,19 +347,16 @@ def test_sensor_with_yesterday(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state == 67
-    assert sensor.extra_state_attributes["description"] == "medium level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "medium level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_ereyesterday(
@@ -397,19 +394,16 @@ def test_sensor_with_ereyesterday(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state == 100
-    assert sensor.extra_state_attributes["description"] == "high level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "high level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_before_last_update(
@@ -447,19 +441,16 @@ def test_sensor_with_before_last_update(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state == 33
-    assert sensor.extra_state_attributes["description"] == "low level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "low level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_before_next_update(
@@ -497,19 +488,16 @@ def test_sensor_with_before_next_update(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state == 67
-    assert sensor.extra_state_attributes["description"] == "medium level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "medium level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"
 
 
 def test_sensor_with_too_old(
@@ -547,16 +535,13 @@ def test_sensor_with_too_old(
     assert sensor.device_class is None
     assert sensor.unit_of_measurement == PERCENTAGE
     assert sensor.state is None
-    assert sensor.extra_state_attributes["description"] == "unknown level of exposure"
-    assert sensor.extra_state_attributes["last_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["description"] == "unknown level of exposure"
+    assert extra_state_attributes(sensor)["last_update"] == datetime.datetime(
         2024, 1, 15, 6, 0
     )
-    assert sensor.extra_state_attributes["next_update"] == datetime.datetime(
+    assert extra_state_attributes(sensor)["next_update"] == datetime.datetime(
         2024, 1, 16, 6, 0
     )
-    assert sensor.extra_state_attributes["region_name"] == "One Region"
-    assert sensor.extra_state_attributes["partregion_name"] == "One Partregion"
-    assert (
-        sensor.extra_state_attributes["attribution"]
-        == "Data provided by Deutscher Wetterdienst"
-    )
+    assert extra_state_attributes(sensor)["region_name"] == "One Region"
+    assert extra_state_attributes(sensor)["partregion_name"] == "One Partregion"
+    assert sensor.attribution == "Data provided by Deutscher Wetterdienst"

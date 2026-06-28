@@ -4,11 +4,10 @@ from datetime import datetime, timedelta
 import logging
 from typing import Any, cast
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import ATTR_ATTRIBUTION, CONF_NAME, PERCENTAGE
+from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorEntity
+from homeassistant.const import CONF_NAME, PERCENTAGE
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import Throttle
@@ -114,8 +113,12 @@ class DwdPollenApi:
             return None
 
 
-class DwdPollenSensor(Entity):
+class DwdPollenSensor(SensorEntity):
     """Representation of a DWD Pollen Sensor."""
+
+    _attr_attribution = ATTRIBUTION
+    _attr_icon = ICON
+    _attr_native_unit_of_measurement = PERCENTAGE
 
     def __init__(
         self,
@@ -126,42 +129,17 @@ class DwdPollenSensor(Entity):
     ) -> None:
         """Initialize the DWD Pollen Sensor."""
         self._api: DwdPollenApi = api
-        self._name: str = name
         self._partregion_id: int = partregion_id
         self._pollen_type: str = pollen_type
-        self._state: int | None = None
-        self._attributes: dict[str, Any] = {}
-
-    @property
-    def name(self) -> str:
-        """Return the name of the DWD Pollen Sensor."""
-        return f"{self._name} {self._partregion_id} {self._pollen_type}"
-
-    @property
-    def unit_of_measurement(self) -> str:
-        """Return the unit of measurement of the DWD Pollen Sensor."""
-        return PERCENTAGE
-
-    @property
-    def icon(self) -> str:
-        """Icon to use in the frontend of the DWD Pollen Sensor."""
-        return ICON
-
-    @property
-    def state(self) -> int | None:
-        """Return the state of the DWD Pollen Sensor."""
-        return self._state
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the state attributes of the DWD Pollen Sensor."""
-        return self._attributes
+        self._attr_name = f"{name} {partregion_id} {pollen_type}"
+        self._attr_native_value: int | None = None
+        self._attr_extra_state_attributes: dict[str, Any] = {}
 
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self) -> None:
         """Fetch new state data for the DWD Pollen Sensor."""
-        self._state = None
-        self._attributes = {}
+        self._attr_native_value = None
+        self._attr_extra_state_attributes = {}
 
         result: dict[str, Any] | None = self._api.get_exposure()
         exposure: dict[str, Any] = {}
@@ -211,15 +189,22 @@ class DwdPollenSensor(Entity):
 
         if exposure:
             if exposure["level"] >= 0:
-                self._state = round(exposure["level"] / 6 * 100)
-            self._attributes[ATTR_DESCRIPTION] = self.__get_description(
-                exposure["level"]
+                self._attr_native_value = round(exposure["level"] / 6 * 100)
+            self._attr_extra_state_attributes[ATTR_DESCRIPTION] = (
+                self.__get_description(exposure["level"])
             )
-            self._attributes[ATTR_LAST_UPDATE] = exposure["last_update"]
-            self._attributes[ATTR_NEXT_UPDATE] = exposure["next_update"]
-            self._attributes[ATTR_REGION_NAME] = exposure["region_name"]
-            self._attributes[ATTR_PARTREGION_NAME] = exposure["partregion_name"]
-            self._attributes[ATTR_ATTRIBUTION] = ATTRIBUTION
+            self._attr_extra_state_attributes[ATTR_LAST_UPDATE] = exposure[
+                "last_update"
+            ]
+            self._attr_extra_state_attributes[ATTR_NEXT_UPDATE] = exposure[
+                "next_update"
+            ]
+            self._attr_extra_state_attributes[ATTR_REGION_NAME] = exposure[
+                "region_name"
+            ]
+            self._attr_extra_state_attributes[ATTR_PARTREGION_NAME] = exposure[
+                "partregion_name"
+            ]
 
     @staticmethod
     def __find_partregion(
